@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>闲鱼7.18.92助手</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <!-- layui样式 -->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <!-- Y-Admin核心样式 -->
+    <link rel="stylesheet" href="/css/yadmin.css">
+    <!-- 公共样式 -->
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="/remixicon/fonts/remixicon.css">
+    <!-- 首页样式（只为此页面使用） -->
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+
+<body class="layui-layout-body">
+
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header">
+        <!-- logo 区域 -->
+        <div class="layui-logo">
+            <img src="/images/security.png" alt="logo" style="margin-left: -5px;"/>
+            <cite>
+                闲鱼7.18.92助手
+            </cite>
+        </div>
+
+        <!-- 头部区域 -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item" lay-unselect>
+                <a lay-event="flexible" title="侧边伸缩">
+                    <i class="layui-icon layui-icon-shrink-right"></i>
+                </a>
+            </li>
+            <!-- 面包屑 -->
+<!--            <span class="layui-breadcrumb layui-anim layui-anim-up">-->
+<!--                    <a><cite>实时搜索</cite></a>-->
+<!--            </span>-->
+        </ul>
+
+        <!-- 头像区域 -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item feature-items">
+                <a lay-event="clear" title="清楚搜索缓存"><i class="ri-brush-3-line"></i></a>
+            </li>
+
+            <li class="layui-nav-item feature-items">
+                <a id="screenFull" lay-event="screenFull" title="全屏">
+                    <i class="ri-fullscreen-line"></i>
+                </a>
+                <a id="screenRestore" lay-event="screenRestore" title="退出全屏" style="display: none;">
+                    <i class="ri-fullscreen-exit-line"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 左侧导航区域 -->
+    <div class="layui-side ">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="lay-nav" lay-accordion="true">
+                <li class="layui-nav-item">
+                    <a lay-url="/search/list" lay-id="/search/list">
+                        <i class="ri-search-line"></i>&emsp;<cite>实时搜索</cite>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a lay-id="/keywords/list" lay-url="/keywords/list">
+                        <i class="ri-keyboard-line"></i>&emsp;<cite>关键字</cite>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a lay-id="/gps/edit" lay-url="/gps/edit">
+                        <i class="ri-gps-fill"></i>&emsp;<cite>gps</cite>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a lay-id="/priceMonitor/list" lay-url="/priceMonitor/list">
+                        <i class="ri-line-chart-line"></i>&emsp;<cite>价格变更记录</cite>
+                    </a>
+                </li>
+            </ul>
+
+
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-pagetabs">
+            <div class="layui-icon admin-tabs-control layui-icon-refresh-3" lay-event="refresh"></div>
+            <div class="layui-tab" lay-unauto lay-allowclose="true" lay-filter="lay-tab">
+                <ul class="layui-tab-title">
+                    <li lay-id="home" lay-url="/view/home/index.html" class="layui-this">
+                        <!-- <i class="ri-home-heart-line ri-xl"></i> -->
+                        <i class="ri-home-8-line ri-xl"></i>
+                    </li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <iframe src="/search/list" class="layui-iframe"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部固定区域 -->
+    <div class="layui-footer">
+        联系方式TG: <a href="https://t.me/c62144">@c62144</a>
+    </div>
+
+    <!-- 移动端遮罩 -->
+    <div class="site-mobile-shade"></div>
+</div>
+<!-- layui JS -->
+<script src="/layui/layui.js"></script>
+<!-- jQuery JS -->
+<script src="/js/jquery.js"></script>
+<!-- 公共JS -->
+<script src="/js/common.js"></script>
+
+</body>
+
+</html>

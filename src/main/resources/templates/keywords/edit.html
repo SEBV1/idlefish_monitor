@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加关键字</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/common.css">
+
+
+    <link rel="stylesheet" href="/layui/extend/dtree.css">
+    <link rel="stylesheet" href="/layui/extend/font/dtreefont.css">
+    <link rel="stylesheet" href="/layui/extend/formSelects-v4.css">
+</head>
+<body>
+<div class="yadmin-body animated fadeIn">
+    <form action="" method="post" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label for="value" class="layui-form-label">
+                关键字
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="value" name="value" th:value="${keywords.value}" lay-verify="required"
+                       lay-vertype="tips"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left:0;text-align:center;">
+                <input type="hidden" id="id" name="id" th:value="${keywords.id}">
+                <button class="layui-btn layui-btn-normal btn-w100" lay-submit="" lay-filter="add">修改</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/layui/layui.js"></script>
+<script src="/js/common.js"></script>
+
+<script>
+    layui.config({
+        base: '/layui/extend/'
+    }).extend({
+        formSelects: 'formSelects-v4'
+    }).use(['form', 'layer', 'formSelects', 'dtree'], function () {
+        $ = layui.jquery;
+        var form = layui.form
+            , layer = layui.layer
+            , formSelects = layui.formSelects
+            , dtree = layui.dtree;
+
+        form.on('submit(add)', function (form) {
+            $.ajax({
+                url: '/keywords/update', // 请替换为实际的服务器接收数据的地址
+                type: 'POST',
+                data: form.field,
+                success: function (response) {
+                    console.log(response);
+                    if (response.code === 500) {
+                        layer.msg(response.msg, {icon: 5});
+                    } else {
+                        layer.msg("修改成功", {icon: 6});
+                    }
+                },
+                error: function () {
+                    layer.msg("提交过程中出现错误", {icon: 5});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/common.css">
+
+    <link rel="stylesheet" href="/layui/extend/dtree.css">
+    <link rel="stylesheet" href="/layui/extend/font/dtreefont.css">
+
+</head>
+<body>
+
+<div class="yadmin-body animated fadeIn">
+    <form class="layui-form yadmin-search-area input">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label for="status" class="layui-form-label">关键字</label>
+                <div class="layui-input-inline">
+                    <select name="status" id="status">
+                        <option value="">请选择</option>
+                        <option value="1">正常</option>
+                        <option value="0">锁定</option>
+                    </select>
+                </div>
+
+                <button lay-submit="" lay-filter="search" class="layui-btn layui-btn-sm layui-btn-primary table-action">
+                    <i class="layui-icon layui-icon-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="user-table"></table>
+</div>
+
+<script type="text/html" id="column-toolbar">
+    <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">
+        <i class="layui-icon ri-slideshow-line" title="详情"></i>
+        详情
+    </button>
+    <button type="button" class="layui-btn layui-bg-orange layui-btn-normal layui-btn-xs" lay-event="monitor">
+        <i class="layui-icon ri-slideshow-line" title="监控价格"></i>
+        监控价格
+    </button>
+</script>
+
+<script type="text/html" id="statusTpl">
+    <input type="checkbox" name="status" value="{{d.userId}}" lay-skin="switch" lay-text="正常|锁定" lay-filter="status"
+           {{ d.status== '1' ? 'checked' : '' }}>
+</script>
+
+<script src="/js/jquery.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/common.js"></script>
+<script type="text/html" id="imgTpl">
+    <img src="{{ d.picUrl }}">
+</script>
+
+<script>
+    function playVoice() {
+        // 创建一个 SpeechSynthesisUtterance 对象
+        const utterance = new SpeechSynthesisUtterance();
+        // 设置要朗读的文本
+        utterance.text = "您有新的商品";
+        // 设置语言
+        utterance.lang = 'zh-CN';
+        // 设置语音音量，范围是 0 到 1
+        utterance.volume = 1;
+        // 设置语音语速，范围是 0.1 到 10
+        utterance.rate = 2;
+        // 设置语音语调，范围是 0 到 2
+        utterance.pitch = 1;
+
+        // 播放语音
+        speechSynthesis.speak(utterance);
+    }
+</script>
+<script>
+
+    console.log('${ctx}')
+
+    function showBigImage(e) {
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            shadeClose: true, //点击阴影关闭
+            area: [$(e).width + 'px', $(e).height + 'px'], //宽高
+            content: "<img src=" + $(e).attr('src') + " />"
+        });
+    }
+
+    layui.config({
+        base: '/layui/extend/'
+    }).use(['table', 'element', 'form', 'dtree', 'tablePlug'], function () {
+        const table = layui.table;
+        const $ = layui.$;
+        const form = layui.form;
+        const dtree = layui.dtree;
+        const tablePlug = layui.tablePlug;
+
+        const eventSource = new EventSource('/search/subscribe');
+
+        eventSource.onopen = function () {
+            console.log("连接打开");
+        }
+
+        eventSource.onmessage = function (event) {
+            const eventData = JSON.parse(event.data);
+            const code = eventData.code;
+            if (code === 1) {
+                let data = [];
+                for (const item of eventData.data) {
+                    data.push(item);
+                }
+                table.render({
+                    elem: '#user-table',
+                    toolbar: '#toolbar',
+                    smartReloadModel: true,
+                    cols: [
+                        [
+                            {type: 'numbers', title: '序号', width: 60},
+                            {field: 'id', title: 'ID', hide: true},
+                            {field: 'title', title: '商品标题', minWidth: 300, align: 'center'},
+                            {field: 'keyword', title: '关键字', minWidth: 100, align: 'center', sort: true},
+                            {
+                                field: 'picUrl',
+                                title: '商品图片',
+                                minWidth: 100,
+                                align: 'center',
+                                templet: "<div><img src=\"{{ d.picUrl }}\" alt=\"\" style=\"width:80px; height:80px;\" onclick=\"showBigImage(this)\"\"></div>"
+                            },
+                            {field: 'itemId', title: '商品ID', minWidth: 80, align: 'center'},
+                            {
+                                field: 'price',
+                                title: '价格',
+                                minWidth: 80,
+                                sort: true,
+                                align: 'center',
+                                templet: function (data) {
+                                    return parseFloat(data.price).toFixed(2);
+                                }
+                            },
+                            {field: 'area', title: '地区', minWidth: 80, align: 'center'},
+                            {field: 'userNickName', title: '卖家ID', minWidth: 80, align: 'center'},
+                            {field: 'publishTime', title: '发布时间', minWidth: 80, align: 'center', sort: true},
+                            {title: '操作', fixed: 'right', align: 'center', toolbar: '#column-toolbar'}
+                        ]
+                    ],
+                    data: data,
+                    limit: 100 // 每页默认显示的数量
+                });
+            } else {
+                console.log(code)
+                // 创建一个 SpeechSynthesisUtterance 对象
+                const utterance = new SpeechSynthesisUtterance();
+                // 设置要朗读的文本
+                utterance.text = "您有新的商品";
+                // 设置语言
+                utterance.lang = 'zh-CN';
+                // 设置语音音量，范围是 0 到 1
+                utterance.volume = 1;
+                // 设置语音语速，范围是 0.1 到 10
+                utterance.rate = 2;
+                // 设置语音语调，范围是 0 到 2
+                utterance.pitch = 1;
+
+                // 播放语音
+                speechSynthesis.speak(utterance);
+            }
+
+        }
+
+        eventSource.onerror = function (error) {
+            console.error('EventSource failed:', error);
+        }
+
+        tablePlug.smartReload.enable(true);
+        table.render({
+            elem: '#user-table',
+            url: '/search/listData',
+            toolbar: '#toolbar',
+            smartReloadModel: true,
+            cols: [
+                [
+                    {type: 'numbers', title: '序号', width: 60},
+                    {field: 'id', title: 'ID', hide: true},
+                    {field: 'title', title: '商品标题', minWidth: 300, align: 'center'},
+                    {field: 'keyword', title: '关键字', minWidth: 100, align: 'center', sort: true},
+                    {
+                        field: 'picUrl',
+                        title: '商品图片',
+                        minWidth: 100,
+                        align: 'center',
+                        templet: "<div><img src=\"{{ d.picUrl }}\" alt=\"\" style=\"width:80px; height:80px;\" onclick=\"showBigImage(this)\"\"></div>"
+                    },
+                    {field: 'itemId', title: '商品ID', minWidth: 80, align: 'center'},
+                    {
+                        field: 'price',
+                        title: '价格',
+                        minWidth: 80,
+                        sort: true,
+                        align: 'center',
+                        templet: function (data) {
+                            var price = parseFloat(data.price).toFixed(2); //设置小数点后个数
+                            return price;
+                        }
+                    },
+                    {field: 'area', title: '地区', minWidth: 80, align: 'center'},
+                    {field: 'userNickName', title: '卖家ID', minWidth: 80, align: 'center'},
+                    {field: 'publishTime', title: '发布时间', minWidth: 80, align: 'center', sort: true},
+                    {title: '操作', fixed: 'right', align: 'center', toolbar: '#column-toolbar'}
+                ]
+            ],
+        });
+
+        // 账号状态(正常/锁定)点击事件
+        form.on('switch(status)', function (data) {
+            if (data.elem.checked) {
+                parent.layer.msg("激活成功", {icon: 6});
+            } else {
+                parent.layer.msg("禁用成功", {icon: 6});
+
+            }
+        });
+
+        // 工具条点击事件
+        table.on('toolbar', function (obj) {
+            const data = obj.data;
+            const event = obj.event;
+        });
+
+        table.on('tool', function (obj) {
+            const data = obj.data;
+            const event = obj.event;
+            if (event === 'detail') {
+                detail(data);
+            } else if (event === 'monitor') {
+                // playVoice();
+                $.ajax({
+                    type: 'POST',
+                    data: data,
+                    url: "/search/priceMonitor",
+                    success: function (response) {
+                        if (response.code === 0) {
+                            layer.msg(response.msg);
+                        } else {
+                            layer.msg(response.msg, {icon: 5});
+                        }
+                    }
+                });
+            }
+        });
+
+
+        function detail(data) {
+            window.open('https://www.goofish.com/item?id=' + data.itemId, '_blank');
+        }
+
+
+        form.on('submit(search)', function (form) {
+            table.reload('user-table', {
+                where: form.field
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>
