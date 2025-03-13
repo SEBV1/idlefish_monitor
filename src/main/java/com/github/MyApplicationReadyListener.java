@@ -58,7 +58,7 @@ public class MyApplicationReadyListener implements ApplicationListener<Applicati
             loginInfo.loginId = account;
             loginInfo.t = currentTimeMillis;
             try {
-                loginInfo.password = Rsa.encrypt("dwh2626+");
+                loginInfo.password = password;
             } catch (Exception e) {
                 log.error("加密密码时出错: {}", e.getMessage());
                 return;
