@@ -1,5 +1,6 @@
 package com.github.taobao.wireless.security.adapter;
 
+import com.github.constants.CommonConstants;
 import com.github.unidbg.AndroidEmulator;
 import com.github.unidbg.Emulator;
 import com.github.unidbg.arm.backend.Unicorn2Factory;
@@ -51,13 +52,13 @@ public class JNICLibraryV7_18_92 extends AbstractJni implements IOResolver<Andro
         memory.setLibraryResolver(new AndroidResolver(23));
         vm = emulator.createDalvikVM(new File("src/main/resources/apk/idlefishv7.18.92.apk"));
         vm.setJni(this);
-        vm.setVerbose(false);
+        vm.setVerbose(true);
         emulator.getSyscallHandler().addIOResolver(this);
         JNICLibrary = vm.resolveClass("com.taobao.wireless.security.adapter.JNICLibrary");
     }
 
 
-    private void init() {
+    public void init() {
         doCommandNative_10101();
         doCommandNative_10102();
         // doCommandNative_20102();
@@ -353,15 +354,19 @@ public class JNICLibraryV7_18_92 extends AbstractJni implements IOResolver<Andro
         return super.callStaticBooleanMethod(vm, dvmClass, signature, varArg);
     }
 
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
         JNICLibraryV7_18_92 jnicLibraryV7_18_92 = new JNICLibraryV7_18_92();
         jnicLibraryV7_18_92.init();
+        String s = jnicLibraryV7_18_92.doCommandNative_20102(System.currentTimeMillis() + "", CommonConstants.appKey);
+        System.out.println(s);
 
-    }*/
+    }
 
     @Override
     public FileResult<AndroidFileIO> resolve(Emulator emulator, String pathname, int oflags) {
         return null;
     }
+
+
 }
 

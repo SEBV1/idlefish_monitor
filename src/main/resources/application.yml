@@ -19,3 +19,8 @@ spring:
         core-size: 8
         keep-alive: 60s
         max-size: 8
+
+
+user:
+  account:   # 账号
+  password:   # 密码

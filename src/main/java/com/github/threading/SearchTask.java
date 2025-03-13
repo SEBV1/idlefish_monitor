@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 @Slf4j
@@ -77,7 +78,11 @@ public class SearchTask implements Callable<List<SearchView>> {
                 Map<String, String> signResult = jnicLibraryV7_18_92ServiceWorker.doCommandNative_70102(CommonConstants.appKey, input, CommonConstants.searchApi).get();
 
                 try {
-                    Map<String, String> headers = RequestParamBuilder.builderHeaders(signResult.get("x-sgext"), signResult.get("x-sign"), signResult.get("x-mini-wua"), t, signResult.get("x-umt"));
+
+                    String cookie = Optional.ofNullable(redisTemplate.opsForValue().get("cookie"))
+                            .map(Object::toString)
+                            .orElse(null);
+                    Map<String, String> headers = RequestParamBuilder.builderHeaders(signResult.get("x-sgext"), signResult.get("x-sign"), signResult.get("x-mini-wua"), t, signResult.get("x-umt"), cookie);
                     param.clear();
                     param.put("data", URLEncoder.encode(dataJson, "UTF-8"));
                     String url = "https://acs.m.goofish.com/gw/mtop.taobao.idlemtopsearch.search/1.0/";
@@ -99,6 +104,7 @@ public class SearchTask implements Callable<List<SearchView>> {
         return searchViewList;
     }
 
+
     private SearchView buildSearchView(JSONObject jsonObject, SearchRequest searchRequest) {
         try {
             Long publishTime = jsonObject.getJSONObject("data").getJSONObject("item").getJSONObject("main").getJSONObject("clickParam").getJSONObject("args").getLong("publishTime");
@@ -118,15 +124,15 @@ public class SearchTask implements Callable<List<SearchView>> {
             BigDecimal price = exContent.getJSONArray("price").getJSONObject(1).getBigDecimal("text");
 
             return SearchView.builder()
-                .title(title)
-                .area(area)
-                .picUrl(picUrl)
-                .price(price)
-                .itemId(itemId)
-                .userNickName(userNickName)
-                .keyword(searchRequest.keyword)
-                .publishTime(format)
-                .build();
+                    .title(title)
+                    .area(area)
+                    .picUrl(picUrl)
+                    .price(price)
+                    .itemId(itemId)
+                    .userNickName(userNickName)
+                    .keyword(searchRequest.keyword)
+                    .publishTime(format)
+                    .build();
         } catch (Exception e) {
             log.error("Failed to build SearchView from JSON object. JSON: {}", jsonObject, e);
             return null;

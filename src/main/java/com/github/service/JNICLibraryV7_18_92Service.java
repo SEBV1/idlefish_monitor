@@ -1,6 +1,7 @@
 package com.github.service;
 
 import com.github.config.UnidbgProperties;
+import com.github.taobao.wireless.security.adapter.JNICLibraryV7_18_92;
 import com.github.unidbg.AndroidEmulator;
 import com.github.unidbg.Emulator;
 import com.github.unidbg.arm.backend.Unicorn2Factory;
@@ -386,11 +387,11 @@ public class JNICLibraryV7_18_92Service extends AbstractJni implements IOResolve
         return super.callStaticBooleanMethod(vm, dvmClass, signature, varArg);
     }
 
-   /* public static void main(String[] args) {
-        JNICLibraryV7_18_92 jnicLibraryV7_18_92 = new JNICLibraryV7_18_92();
-        jnicLibraryV7_18_92.init();
+   public static void main(String[] args) {
+//        JNICLibraryV7_18_92 jnicLibraryV7_18_92 = new JNICLibraryV7_18_92();
+//        jnicLibraryV7_18_92.init();
 
-    }*/
+    }
 
     @Override
     public FileResult<AndroidFileIO> resolve(Emulator emulator, String pathname, int oflags) {
